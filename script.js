@@ -56,6 +56,12 @@ window.addEventListener('load',function(){
             }
             this.collisionX += this.speedX * this.speedModifier;
             this.collisionY += this.speedY * this.speedModifier;
+            // collisions with obstacles
+            this.game.obstacles.forEach(obstacle => {
+                if(this.game.checkCollision(obstacle, this)){
+                    console.log('collision');
+                }
+            })
         }
     }
 
@@ -76,7 +82,10 @@ window.addEventListener('load',function(){
             this.frameY = Math.floor(Math.random()*3) * this.spriteHeight;
         }
         draw(context) {
-            context.drawImage(this.image, this.frameX, this.frameY, this.spriteWidth, this.spriteHeight, this.spriteX, this.spriteY, this.width, this.height);
+            context.drawImage(this.image, this.frameX, this.frameY, 
+                this.spriteWidth, this.spriteHeight, 
+                this.spriteX, this.spriteY, 
+                this.width, this.height);
             context.beginPath();
             context.arc(this.collisionX, this.collisionY, this.collisionRadius, 0, Math.PI * 2);
             context.save();
@@ -126,6 +135,14 @@ window.addEventListener('load',function(){
             this.player.draw(context);
             this.player.update();
             this.obstacles.forEach(obstacle => obstacle.draw(context)); // draw each obstacle
+        }
+
+        checkCollision(a,b) { // this method takes 2 objects and checks if they are colliding or not
+            const dx = a.collisionX - b.collisionY;
+            const dy = a.collisionY - b.collisionY;
+            const distance = Math.hypot(dy,dx);
+            const sumOfRadii = a.collisionRadius + b.collisionRadius;
+            return (distance < sumOfRadii);
         }
 
         init() {
