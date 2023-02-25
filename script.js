@@ -21,6 +21,7 @@ window.addEventListener('load',function(){
             this.dy = 0; // distance b/w mouse and player vertically
             this.speedModifier = 5; // to modify the speed
         }
+
         // draw method is used to draw and animate player
         // context specify which canvas we use to draw
         draw(context) {
@@ -40,6 +41,7 @@ window.addEventListener('load',function(){
             context.lineTo(this.game.mouse.x, this.game.mouse.y); // defines the ending coordinates
             context.stroke(); // to actually draw the line
         }
+
         update() {
             // to move the player in the direction of the mouse
             this.dx = this.game.mouse.x - this.collisionX;
@@ -57,12 +59,32 @@ window.addEventListener('load',function(){
         }
     }
 
+    class Obstacle {
+        constructor (game) {
+            this.game = game; // convert the argument as class object
+            this.collisionX = Math.random() * this.game.width;
+            this.collisionY = Math.random() * this.game.height;
+            this.collisionRadius = 40;
+        }
+        draw(context) {
+            context.beginPath();
+            context.arc(this.collisionX, this.collisionY, this.collisionRadius, 0, Math.PI * 2);
+            context.save();
+            context.globalAlpha = 0.5;
+            context.fill();
+            context.restore();
+            context.stroke();
+        }
+    }
+
     class Game {
         constructor () {
             this.canvas = canvas;
             this.width = this.canvas.width;
             this.height = this.canvas.height;
             this.player = new Player(this);
+            this.noOfObstacles = 5;
+            this.obstacles = []
             this.mouse = {
                 x: this.width * 0.5,
                 y: this.height * 0.5,
@@ -92,10 +114,18 @@ window.addEventListener('load',function(){
         render(context) {
             this.player.draw(context);
             this.player.update();
+            this.obstacles.forEach(obstacle => obstacle.draw(context)); // draw each obstacle
+        }
+
+        init() {
+            for( let i=0 ; i<this.noOfObstacles ; i++ ){
+                this.obstacles.push(new Obstacle(this));
+            }
         }
     }
 
     const game = new Game(canvas);
+    game.init();
 
 
     function animate () {
