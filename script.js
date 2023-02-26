@@ -57,9 +57,18 @@ window.addEventListener('load',function(){
             this.collisionX += this.speedX * this.speedModifier;
             this.collisionY += this.speedY * this.speedModifier;
             // collisions with obstacles
+            
+            // this.game.obstacles.forEach(obstacle => {
+            //     let [collision, distance, sumOfRadii, dx, dy] = his.game.checkCollision(obstacle, this);
+            // })
+            // [(distance < sumOfRadii), distance, sumOfRadii, dx, dy]
             this.game.obstacles.forEach(obstacle => {
-                if(this.game.checkCollision(obstacle, this)){
-                    console.log('collision');
+                let [collision, distance, sumOfRadii, dx, dy] = this.game.checkCollision(obstacle, this);
+                if(collision) {
+                    const unit_x = dx/distance;
+                    const unit_y = dy/distance;
+                    this.collisionX = obstacle.collisionX + (sumOfRadii + 1) * unit_x;
+                    this.collisionY = obstacle.collisionY + (sumOfRadii + 1) * unit_y;
                 }
             })
         }
@@ -142,7 +151,7 @@ window.addEventListener('load',function(){
             const dy = a.collisionY - b.collisionY;
             const distance = Math.hypot(dy,dx);
             const sumOfRadii = a.collisionRadius + b.collisionRadius;
-            return (distance < sumOfRadii);
+            return [(distance < sumOfRadii), distance, sumOfRadii, dx, dy];
         }
 
         init() {
